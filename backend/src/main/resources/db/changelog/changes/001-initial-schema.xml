@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001-create-account" author="system">
+        <createTable tableName="account">
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="total_solved" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="easy_solved" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="medium_solved" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="hard_solved" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="ranking" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="acceptance_rate" type="FLOAT8"/>
+            <column name="last_synced_at" type="TIMESTAMP"/>
+            <column name="submission_calendar" type="TEXT"/>
+            <column name="calendar_history" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="001-create-problem" author="system">
+        <createTable tableName="problem">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="leetcode_number" type="INTEGER"/>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="difficulty" type="VARCHAR(10)"/>
+            <column name="topic" type="VARCHAR(255)"/>
+            <column name="pattern" type="VARCHAR(255)"/>
+            <column name="solved_date" type="DATE"/>
+            <column name="first_attempted" type="DATE"/>
+            <column name="due_date" type="DATE"/>
+            <column name="confidence" type="INTEGER"/>
+            <column name="notes" type="VARCHAR(5000)"/>
+            <column name="leetcode_url" type="VARCHAR(255)"/>
+            <column name="last_submission_id" type="BIGINT"/>
+            <column name="last_lang" type="VARCHAR(255)"/>
+            <column name="last_runtime" type="VARCHAR(255)"/>
+            <column name="last_memory" type="VARCHAR(255)"/>
+        </createTable>
+        <createIndex tableName="problem" indexName="idx_problem_user_number">
+            <column name="user_id"/>
+            <column name="leetcode_number"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="001-create-submission" author="system">
+        <createTable tableName="submission">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)"/>
+            <column name="leetcode_number" type="INTEGER"/>
+            <column name="submission_date" type="DATE"/>
+            <column name="submission_timestamp" type="BIGINT"/>
+        </createTable>
+        <createIndex tableName="submission" indexName="idx_submission_user_date">
+            <column name="user_id"/>
+            <column name="submission_date"/>
+        </createIndex>
+        <createIndex tableName="submission" indexName="idx_submission_user_number">
+            <column name="user_id"/>
+            <column name="leetcode_number"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
