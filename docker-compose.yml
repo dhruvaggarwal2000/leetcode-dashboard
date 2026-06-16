@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: leetcode-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-leetcode}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-leetcode_db}
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
