@@ -56,7 +56,7 @@ class SyncServiceTest {
         when(leetCodeService.getRecentSolvedProblems(USER, 500)).thenReturn(Flux.just(incoming));
         when(leetCodeService.getProfile(USER)).thenReturn(Mono.just(profile()));
 
-        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, null, null).block();
+        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, null).block();
 
         assertThat(result).containsEntry("imported", 1).containsEntry("updated", 0);
 
@@ -86,11 +86,11 @@ class SyncServiceTest {
 
         when(problemRepository.findByUserId(USER)).thenReturn(List.of());
         when(submissionRepository.findSubmissionIdsByUserId(USER)).thenReturn(Set.of());
-        when(leetCodeService.getAllSolvedProblems(eq("session-token"), eq("cf"), any()))
+        when(leetCodeService.getAllSolvedProblems(eq("session-token"), any()))
                 .thenReturn(Flux.just(incoming));
         when(leetCodeService.getProfile(USER)).thenReturn(Mono.just(profile()));
 
-        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, "session-token", "cf").block();
+        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, "session-token").block();
 
         assertThat(result).containsEntry("imported", 1).containsEntry("updated", 0);
 
@@ -112,11 +112,11 @@ class SyncServiceTest {
 
         when(problemRepository.findByUserId(USER)).thenReturn(List.of());
         when(submissionRepository.findSubmissionIdsByUserId(USER)).thenReturn(Set.of(1001L));
-        when(leetCodeService.getAllSolvedProblems(anyString(), any(), any()))
+        when(leetCodeService.getAllSolvedProblems(anyString(), any()))
                 .thenReturn(Flux.just(subAlreadyKnown, subNew));
         when(leetCodeService.getProfile(USER)).thenReturn(Mono.just(profile()));
 
-        syncService.syncSolvedProblems(USER, 500, "session-token", null).block();
+        syncService.syncSolvedProblems(USER, 500, "session-token").block();
 
         ArgumentCaptor<List<Submission>> subs = submissionSaveCaptor();
         verify(submissionRepository).saveAll(subs.capture());
@@ -142,7 +142,7 @@ class SyncServiceTest {
         when(leetCodeService.getRecentSolvedProblems(USER, 500)).thenReturn(Flux.just(incoming));
         when(leetCodeService.getProfile(USER)).thenReturn(Mono.just(profile()));
 
-        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, null, null).block();
+        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, null).block();
 
         assertThat(result).containsEntry("imported", 0).containsEntry("updated", 1);
 
@@ -169,11 +169,11 @@ class SyncServiceTest {
 
         when(problemRepository.findByUserId(USER)).thenReturn(List.of());
         when(submissionRepository.findSubmissionIdsByUserId(USER)).thenReturn(Set.of());
-        when(leetCodeService.getAllSolvedProblems(anyString(), any(), any()))
+        when(leetCodeService.getAllSolvedProblems(anyString(), any()))
                 .thenReturn(Flux.just(older, newer, latest));
         when(leetCodeService.getProfile(USER)).thenReturn(Mono.just(profile()));
 
-        syncService.syncSolvedProblems(USER, 500, "session-token", null).block();
+        syncService.syncSolvedProblems(USER, 500, "session-token").block();
 
         ArgumentCaptor<List<Problem>> saved = problemSaveCaptor();
         verify(problemRepository).saveAll(saved.capture());
@@ -194,7 +194,7 @@ class SyncServiceTest {
         when(leetCodeService.getRecentSolvedProblems(USER, 500)).thenReturn(Flux.just(incoming));
         when(leetCodeService.getProfile(USER)).thenReturn(Mono.error(new RuntimeException("boom")));
 
-        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, null, null).block();
+        Map<String, Object> result = syncService.syncSolvedProblems(USER, 500, null).block();
 
         assertThat(result).containsEntry("imported", 1).containsEntry("updated", 0);
         // Profile failed → no account save
@@ -209,7 +209,7 @@ class SyncServiceTest {
         when(leetCodeService.getProfile(USER)).thenReturn(Mono.just(profile()));
         when(accountRepository.save(any(Account.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        syncService.syncSolvedProblems(USER, 500, null, null).block();
+        syncService.syncSolvedProblems(USER, 500, null).block();
 
         ArgumentCaptor<Account> account = ArgumentCaptor.forClass(Account.class);
         verify(accountRepository).save(account.capture());

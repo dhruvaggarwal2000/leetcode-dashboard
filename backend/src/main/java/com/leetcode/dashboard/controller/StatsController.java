@@ -90,9 +90,8 @@ public class StatsController {
     public Mono<Map<String, Object>> syncSolvedProblems(
             @PathVariable String username,
             @RequestParam(defaultValue = "500") int limit,
-            @RequestHeader(value = "X-LC-Session", required = false) String sessionToken,
-            @RequestHeader(value = "X-CF-Clearance", required = false) String cfClearance
+            @RequestHeader(value = "X-LC-Session", required = false) String sessionToken
     ) {
-        return syncService.syncSolvedProblems(username, limit, sessionToken, cfClearance);
+        return syncService.syncSolvedProblems(username, limit, sessionToken);
     }
 }

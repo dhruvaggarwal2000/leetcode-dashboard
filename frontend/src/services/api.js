@@ -31,10 +31,9 @@ export const api = {
   },
   leetcode: {
     profile: (username) => axios.get(`${BASE}/leetcode/${username}`).then(r => r.data),
-    sync: (username, token, cfClearance) => {
+    sync: (username, token) => {
       const headers = {}
       if (token) headers['X-LC-Session'] = token
-      if (cfClearance) headers['X-CF-Clearance'] = cfClearance
       return axios.post(`${BASE}/leetcode/${username}/sync`, null, { headers }).then(r => r.data)
     },
   },

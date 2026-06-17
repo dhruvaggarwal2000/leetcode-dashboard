@@ -45,8 +45,7 @@ export default function Dashboard() {
     setSyncing(true)
     setSyncResult(null)
     const token = localStorage.getItem('lc_session_token')
-    const cfClearance = localStorage.getItem('lc_cf_clearance')
-    api.leetcode.sync(lcUser, token, cfClearance)
+    api.leetcode.sync(lcUser, token)
       .then(result => {
         setSyncResult(result)
         api.stats.get().then(setStats)
@@ -169,7 +168,6 @@ export default function Dashboard() {
                   setAccount(null); setLcUser(''); setStats(null)
                   localStorage.removeItem('lc_username')
                   localStorage.removeItem('lc_session_token')
-                  localStorage.removeItem('lc_cf_clearance')
                   setSyncResult(null)
                 }}>Change User</button>
               </div>

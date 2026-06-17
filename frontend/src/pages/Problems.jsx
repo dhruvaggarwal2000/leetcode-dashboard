@@ -47,28 +47,19 @@ export default function Problems() {
 
   const lcUsername = localStorage.getItem('lc_username')
   const [token, setToken]               = useState(localStorage.getItem('lc_session_token') || '')
-  const [cfClearanceState, setCfClearanceState] = useState(localStorage.getItem('lc_cf_clearance') || '')
   const [showTokenInput, setShowTokenInput] = useState(false)
   const [tokenDraft, setTokenDraft]     = useState('')
-  const [cfDraft, setCfDraft]           = useState('')
 
   function saveToken() {
     localStorage.setItem('lc_session_token', tokenDraft)
     setToken(tokenDraft)
-    if (cfDraft) {
-      localStorage.setItem('lc_cf_clearance', cfDraft)
-      setCfClearanceState(cfDraft)
-    }
     setShowTokenInput(false)
     setTokenDraft('')
-    setCfDraft('')
   }
 
   function clearToken() {
     localStorage.removeItem('lc_session_token')
-    localStorage.removeItem('lc_cf_clearance')
     setToken('')
-    setCfClearanceState('')
   }
 
   function loadProblems() {
@@ -79,8 +70,7 @@ export default function Problems() {
     if (!lcUsername) return
     setSyncing(true)
     setSyncMsg('')
-    const cfClearance = localStorage.getItem('lc_cf_clearance')
-    api.leetcode.sync(lcUsername, token, cfClearance)
+    api.leetcode.sync(lcUsername, token)
       .then(result => {
         const parts = []
         if (result.imported > 0) parts.push(`${result.imported} new`)
@@ -163,15 +153,8 @@ export default function Problems() {
                 placeholder="LEETCODE_SESSION cookie"
                 value={tokenDraft}
                 onChange={e => setTokenDraft(e.target.value)}
-                autoFocus
-                style={{ fontSize: '13px', padding: '4px 8px', width: 300 }}
-              />
-              <input
-                type="password"
-                placeholder="cf_clearance cookie (optional)"
-                value={cfDraft}
-                onChange={e => setCfDraft(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && saveToken()}
+                autoFocus
                 style={{ fontSize: '13px', padding: '4px 8px', width: 300 }}
               />
               <div style={{ display: 'flex', gap: 6 }}>
@@ -183,9 +166,9 @@ export default function Problems() {
             <>
               {token
                 ? <button className="btn btn-ghost" style={{ fontSize: '12px', color: '#21897E' }} onClick={clearToken}>
-                    Token ✓{cfClearanceState ? ' · CF ✓' : ''} ✕
+                    Token ✓ ✕
                   </button>
-                : <button className="btn btn-ghost" style={{ fontSize: '12px' }} onClick={() => { setShowTokenInput(true); setTokenDraft(token); setCfDraft(cfClearanceState) }}>Set Token</button>
+                : <button className="btn btn-ghost" style={{ fontSize: '12px' }} onClick={() => { setShowTokenInput(true); setTokenDraft(token) }}>Set Token</button>
               }
               {lcUsername
                 ? <button className="btn btn-primary" onClick={syncFromLC} disabled={syncing}>

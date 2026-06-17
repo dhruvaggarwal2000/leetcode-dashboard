@@ -169,12 +169,11 @@ class StatsControllerTest {
 
     @Test
     void syncSolvedProblems_delegatesToSyncService() throws Exception {
-        when(syncService.syncSolvedProblems(eq("alice"), eq(500), anyString(), anyString()))
+        when(syncService.syncSolvedProblems(eq("alice"), eq(500), anyString()))
                 .thenReturn(Mono.just(Map.of("imported", 3, "updated", 5)));
 
         MvcResult result = mvc.perform(post("/api/leetcode/alice/sync")
-                        .header("X-LC-Session", "session-token")
-                        .header("X-CF-Clearance", "cf"))
+                        .header("X-LC-Session", "session-token"))
                 .andExpect(request().asyncStarted())
                 .andReturn();
 

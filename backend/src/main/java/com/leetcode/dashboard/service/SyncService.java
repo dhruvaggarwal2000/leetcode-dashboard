@@ -32,14 +32,14 @@ public class SyncService {
     private final AccountRepository accountRepository;
 
     public Mono<Map<String, Object>> syncSolvedProblems(
-            String username, int limit, String sessionToken, String cfClearance
+            String username, int limit, String sessionToken
     ) {
         boolean authenticated = sessionToken != null && !sessionToken.isBlank();
 
         return loadExistingState(username, authenticated)
                 .flatMap(state -> {
                     Flux<Problem> source = authenticated
-                            ? leetCodeService.getAllSolvedProblems(sessionToken, cfClearance, state.knownSubIds())
+                            ? leetCodeService.getAllSolvedProblems(sessionToken, state.knownSubIds())
                             : leetCodeService.getRecentSolvedProblems(username, limit);
 
                     return source

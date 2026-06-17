@@ -171,9 +171,8 @@ public class LeetCodeService {
                 .onErrorReturn(buildMinimalProblem(title, solvedDate, titleSlug, submissionId, lang, runtime, memory));
     }
 
-    private Mono<String> fetchCsrf(String sessionToken, String cfClearance) {
-        String cookie = "LEETCODE_SESSION=" + sessionToken
-                + (cfClearance != null && !cfClearance.isBlank() ? "; cf_clearance=" + cfClearance : "");
+    private Mono<String> fetchCsrf(String sessionToken) {
+        String cookie = "LEETCODE_SESSION=" + sessionToken;
         return browserClient.get()
                 .uri("/")
                 .header(HttpHeaders.COOKIE, cookie)
@@ -187,10 +186,9 @@ public class LeetCodeService {
             {"operationName":"submissionList","query":"query submissionList($offset: Int!, $limit: Int!, $questionSlug: String) { submissionList(offset: $offset, limit: $limit, questionSlug: $questionSlug) { lastKey hasNext submissions { id statusDisplay lang runtime timestamp url title memory titleSlug } } }","variables":{"offset":%d,"limit":20,"questionSlug":"%s"}}
             """;
 
-    public Flux<Problem> getAllSolvedProblems(String sessionToken, String cfClearance, java.util.Set<Long> knownIds) {
-        return fetchCsrf(sessionToken, cfClearance).flatMapMany(csrf -> {
-            String cookie = "LEETCODE_SESSION=" + sessionToken + "; csrftoken=" + csrf
-                    + (cfClearance != null && !cfClearance.isBlank() ? "; cf_clearance=" + cfClearance : "");
+    public Flux<Problem> getAllSolvedProblems(String sessionToken, java.util.Set<Long> knownIds) {
+        return fetchCsrf(sessionToken).flatMapMany(csrf -> {
+            String cookie = "LEETCODE_SESSION=" + sessionToken + "; csrftoken=" + csrf;
             return fetchSubmissionsPage(cookie, csrf, 0)
                     .filter(sub -> "Accepted".equals(sub.get("statusDisplay")))
                     .collectList()

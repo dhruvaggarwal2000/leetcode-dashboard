@@ -145,7 +145,7 @@ The conditional wiring uses Spring's `@ConditionalOnProperty` / `@ConditionalOnE
 - **Two sync modes, with different fidelity.**
   - *Why two:* anonymous mode lets a user try the app immediately (no LeetCode login flow inside this app); authenticated mode is needed for the heatmap because LeetCode does not expose full submission history without auth.
   - *Anonymous:* no session header. Uses the public `recentAcSubmissionList` GraphQL query (capped at `limit`, default 500). Writes only to `Problem` — there are no submission events to record.
-  - *Authenticated:* `X-LC-Session` (+ optional `X-CF-Clearance` to defeat Cloudflare). Fetches the full paginated submission list via `submissionList` (CSRF token fetched first). Writes to both `Problem` and `Submission`.
+  - *Authenticated:* `X-LC-Session` (the user's `LEETCODE_SESSION` cookie). Fetches the full paginated submission list via `submissionList` (CSRF token fetched first). Writes to both `Problem` and `Submission`.
   - *Cleanup:* after a successful authenticated sync, orphan rows (`leetcode_number IS NOT NULL AND last_submission_id IS NULL`) are deleted — these are anonymous-mode leftovers now superseded by authenticated data.
 
 - **Per-slug enrichment cache during sync** (`LeetCodeService.getAllSolvedProblems`).
@@ -416,7 +416,7 @@ Proxies LeetCode's profile GraphQL via `LeetCodeService.getProfile`; upserts the
 Sync solved problems from LeetCode. The path parameter is also used as the `user_id` for inserted/updated rows. Two modes selected by header presence (see table below). After both modes, the profile is refreshed and `Account` upserted; refresh errors are swallowed but counts still return.
 
 **Query params:** `limit=500` (anonymous mode only).
-**Headers (optional):** `X-LC-Session`, `X-CF-Clearance`.
+**Headers (optional):** `X-LC-Session`.
 
 **Response — `Map<String, Object>`**
 ```json
